@@ -3,12 +3,15 @@ package JanKozakZal;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class List {
 
     private ArrayList<employee> employeesList = new ArrayList<employee>();
     private ArrayList<ArrayList<employee>> listOfLists = new ArrayList<ArrayList<employee>>();
+    private HashSet<Integer> listOfDept = new HashSet<Integer>();
     private String tempS;
     private employee tempE = new employee();
 
@@ -43,6 +46,7 @@ public class List {
 
     public employee addEmployee(employee e){
         employeesList.add(e);
+        listOfDept.add(e.getDeptNo());
         System.out.println("New employee have just been added: \n" + e.SpecialInformation());
         System.out.println("-------------------------------------------------------------------------------------");
         return e;
@@ -145,30 +149,103 @@ public class List {
         return averageSalary;
     }
 
-    public void highestSalaryFM(){
+    public float highestSalaryFM(){
+        System.out.println("Enter a number of department number wherein you want to find the highest salary for female and male sex " +
+                "or enter \"-1\" to find for all employees in a company");
+        Scanner scan1 = new Scanner(System.in);
+        int tempScan = scan1.nextInt();
         float salaryMaxF = employeesList.get(0).getSalary();
         float salaryMaxM = employeesList.get(0).getSalary();
         int posF = 0;
         int posM = 0;
-        for (int i = 0; i < employeesList.size(); i++) {
-            if (employeesList.get(i).getSex() == 'F') {
-                if (employeesList.get(i).getSalary() > salaryMaxF) {
-                    salaryMaxF = employeesList.get(i).getSalary();
-                    posF = i;
-                }
+        if (tempScan == -1)
+            for (int i = 0; i < employeesList.size(); i++) {
+                    if (employeesList.get(i).getSex() == 'F') {
+                        if (employeesList.get(i).getSalary() > salaryMaxF) {
+                            salaryMaxF = employeesList.get(i).getSalary();
+                            posF = i;
+                        }
+                    } else if (employeesList.get(i).getSex() == 'M') {
+                        if (employeesList.get(i).getSalary() > salaryMaxM) {
+                            salaryMaxM = employeesList.get(i).getSalary();
+                            posM = i;
+                        }
+                    }
             }
-            else if (employeesList.get(i).getSex() == 'M') {
-                if (employeesList.get(i).getSalary() > salaryMaxM) {
-                    salaryMaxM = employeesList.get(i).getSalary();
-                    posM = i;
-                }
+        if (tempScan != -1)
+            for (int i = 0; i < employeesList.size(); i++) {
+                    if (employeesList.get(i).getDeptNo() == tempScan) {
+                        if (employeesList.get(i).getSex() == 'F') {
+                            if (employeesList.get(i).getSalary() > salaryMaxF) {
+                                salaryMaxF = employeesList.get(i).getSalary();
+                                posF = i;
+                            }
+                        } else if (employeesList.get(i).getSex() == 'M') {
+                            if (employeesList.get(i).getSalary() > salaryMaxM) {
+                                salaryMaxM = employeesList.get(i).getSalary();
+                                posM = i;
+                            }
+                        }
+                    }
             }
-        }
-        System.out.println("The highest salary has " + employeesList.get(posF).getName() + " " + employeesList.get(posF).getSurname()  + " with " + salaryMaxF + " salary from female sex");
-        System.out.println("The highest salary has " + employeesList.get(posM).getName() + " " + employeesList.get(posM).getSurname()  + " with " + salaryMaxM + " salary from male sex");
+        String tempDisplay;
+        if (tempScan == -1)
+            tempDisplay = "all";
+        else
+            tempDisplay = Integer.toString(tempScan);
+        System.out.println("The highest salary from department number " + tempDisplay + " has " + employeesList.get(posF).getName() + " " + employeesList.get(posF).getSurname()  + " with " + salaryMaxF + " salary from female sex");
+        System.out.println("The highest salary from department number " + tempDisplay + " has "+ employeesList.get(posM).getName() + " " + employeesList.get(posM).getSurname()  + " with " + salaryMaxM + " salary from male sex");
+        return Math.max(salaryMaxF, salaryMaxM);
     }
 
-
-
+    public float sexFtoMDominancePercentage(){
+        System.out.println("Choose a department number wherein you want to display a sex dominance result. For all departments enter \"-1\"");
+        for (int dept : listOfDept)
+            System.out.println(dept);
+        System.out.println("------------");
+        Scanner scan1 = new Scanner(System.in);
+        int no = scan1.nextInt();
+        int noF = 0;
+        int noM = 0;
+        if (no == -1)
+            for (int i = 0; i < employeesList.size(); i++){
+                    if (employeesList.get(i).getSex() == 'F')
+                        noF++;
+                    else if (employeesList.get(i).getSex() == 'M')
+                        noM++;
+            }
+        else if (no != -1)
+            for (int i = 0; i < employeesList.size(); i++){
+                if (employeesList.get(i).getDeptNo() == no)
+                    if (employeesList.get(i).getDeptNo() == no){
+                        if (employeesList.get(i).getSex() == 'F')
+                            noF++;
+                        else if (employeesList.get(i).getSex() == 'M')
+                            noM++;
+                    }
+            }
+        String displayNo;
+        if (no == -1)
+            displayNo = "all";
+        else
+            displayNo = Integer.toString(no);
+        float ratioReturn;
+        float ratio;
+        try {
+            ratio = noF / noM * 100;
+            ratioReturn = noF / noM;
+            Formatter ratioF = new Formatter();
+            ratioF.format("%.2f", ratio);
+            String ratioToDisplay = ratioF.toString();
+            System.out.println("Ratio of female to male sex in department no " + displayNo + " stand at " + ratioToDisplay + " %");
+        }
+        catch(ArithmeticException ae) {
+            ratio = 0;
+            ratioReturn = 0;
+            System.out.println("Number of male sex is 0. The ratio department no " + displayNo + " stand at 0% for male to female sex");
+        }
+        return ratioReturn;
+    }
 
 }
+
