@@ -13,10 +13,11 @@ public class Main {
         list1.addEmployee(B);
         list1.addEmployee(C);
         list1.addEmployee(D);
-        list1.editEmployee();
+       // list1.editEmployee();
         //list1.listShortInformation();
         list1.employeesWithSalary(2000);
         list1.meanSalaryinDept(1);
         list1.highestSalaryFM();
+        list1.sexFtoMDominancePercentage();
     }
 }
