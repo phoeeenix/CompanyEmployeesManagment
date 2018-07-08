@@ -1,6 +1,6 @@
 package JanKozakZal;
 
-public class employee {
+public class employee implements Comparable<employee> {
 
     private String name;
     private String surname;
@@ -54,16 +54,22 @@ public class employee {
             return false;
     }
 
-    public float payRise(int percentage) {
+    public float payRise(float percentage) {
         float newSalary = 0;
         if (percentage < 0)
             System.out.println("The percentage of pay rise must be higher than 0");
         else {
-            newSalary = salary * (1 + percentage / 100 + 0.02f * childrenNo /*+ 0.03 * married*/);
+            newSalary = salary * (1 + percentage / 100 + 0.02f * childrenNo);
             if (married == true)
                 newSalary += salary * 0.03;
         }
+        salary = newSalary;
         return newSalary;
+    }
+
+    public int compareTo(employee e) {
+        System.out.println(surname.compareTo(e.getSurname()));
+        return surname.compareTo(e.getSurname());
     }
 
     public String getName() {
